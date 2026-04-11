@@ -1,33 +1,51 @@
 import React, { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { FiPlus, FiMinus } from "react-icons/fi";
 
 const FAQItem = ({ question, answer }) => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <div className="border-b border-gray-200 dark:border-gray-800">
+    <motion.div
+      initial={false}
+      className="border-b border-gray-100 dark:border-gray-800"
+    >
       <button
-        className="w-full py-6 flex justify-between items-center text-left focus:outline-none group"
+        className="w-full py-7 flex justify-between items-center text-left focus:outline-none group"
         onClick={() => setIsOpen(!isOpen)}
       >
-        <span className="text-lg md:text-xl font-medium text-[#0A2540] dark:text-[#F5F2EE] group-hover:text-[#C9A24D] transition-colors">
+        <span
+          className={`text-lg md:text-xl font-medium transition-all duration-300 ${
+            isOpen ? "text-[#C9A24D]" : "text-[#0A2540] dark:text-[#F5F2EE]"
+          } group-hover:text-[#C9A24D]`}
+        >
           {question}
         </span>
-        <span className="text-[#C9A24D] text-2xl">
+        <motion.span
+          animate={{ rotate: isOpen ? 180 : 0 }}
+          className="text-[#C9A24D] text-2xl ml-4"
+        >
           {isOpen ? <FiMinus /> : <FiPlus />}
-        </span>
+        </motion.span>
       </button>
 
-      <div
-        className={`overflow-hidden transition-all duration-300 ${
-          isOpen ? "max-h-96 pb-6" : "max-h-0"
-        }`}
-      >
-        <p className="text-gray-600 dark:text-gray-400 text-lg leading-relaxed">
-          {answer}
-        </p>
-      </div>
-    </div>
+      <AnimatePresence initial={false}>
+        {isOpen && (
+          <motion.div
+            key="content"
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.3, ease: "easeInOut" }}
+            className="overflow-hidden"
+          >
+            <p className="pb-8 text-gray-500 dark:text-gray-400 text-lg leading-relaxed max-w-[90%]">
+              {answer}
+            </p>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.div>
   );
 };
 
@@ -81,25 +99,47 @@ const FAQ = () => {
   ];
 
   return (
-    <div className="bg-white dark:bg-[#101828] min-h-screen py-20 px-6">
+    <div className="bg-white dark:bg-[#101828] min-h-screen py-24 px-6 transition-colors duration-500">
       <div className="max-w-4xl mx-auto">
         {/* Header Section */}
-        <div className="text-center mb-20">
-          <h1 className="text-[#0A2540] dark:text-[#C9A24D] text-4xl md:text-6xl font-bold mb-6">
-            Happy to make <br /> you happy!
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-center mb-24"
+        >
+          <motion.span
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.2 }}
+            className="text-[#C9A24D] font-bold tracking-[0.3em] uppercase text-sm mb-4 block"
+          >
+            Help Center
+          </motion.span>
+          <h1 className="text-[#0A2540] dark:text-white text-5xl md:text-7xl font-bold mb-8 tracking-tight">
+            Happy to make <br />{" "}
+            <span className="text-[#C9A24D]">you happy!</span>
           </h1>
-          <p className="text-gray-500 dark:text-gray-400 text-lg">
-            Have questions? We're here to help you.
+          <div className="h-1 w-20 bg-[#C9A24D] mx-auto rounded-full mb-6"></div>
+          <p className="text-gray-500 dark:text-gray-400 text-xl max-w-xl mx-auto">
+            Everything you need to know about the products and billing.
           </p>
-        </div>
+        </motion.div>
 
         {/* FAQ Sections */}
         {faqData.map((section, idx) => (
-          <div key={idx} className="mb-16">
-            <h2 className="text-[#C9A24D] text-sm uppercase tracking-[0.3em] font-bold mb-8 border-b-2 border-[#C9A24D] inline-block pb-1">
-              {section.category}
+          <motion.div
+            key={idx}
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: idx * 0.1 }}
+            className="mb-20"
+          >
+            <h2 className="text-[#C9A24D] text-sm uppercase tracking-[0.4em] font-extrabold mb-10 flex items-center gap-4">
+              <span>{section.category}</span>
+              <div className="h-[1px] flex-1 bg-gray-100 dark:bg-gray-800"></div>
             </h2>
-            <div className="mt-4">
+            <div className="space-y-2">
               {section.questions.map((item, qIdx) => (
                 <FAQItem
                   key={qIdx}
@@ -108,22 +148,35 @@ const FAQ = () => {
                 />
               ))}
             </div>
-          </div>
+          </motion.div>
         ))}
 
-        {/* Contact Support Box */}
-        <div className="mt-20 p-8 bg-[#F5F2EE] dark:bg-[#0A2540] rounded-2xl text-center border border-gray-100 dark:border-gray-800">
-          <h3 className="text-2xl font-bold text-[#0A2540] dark:text-[#F5F2EE] mb-4">
+        {/* Contact Support Box with Glow effect */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          viewport={{ once: true }}
+          className="mt-32 p-10 md:p-16 bg-slate-50 dark:bg-[#0A2540] rounded-[2.5rem] text-center border border-gray-100 dark:border-white/5 shadow-2xl shadow-blue-500/5 relative overflow-hidden"
+        >
+          <div className="absolute top-0 right-0 w-32 h-32 bg-[#C9A24D]/10 blur-3xl rounded-full -mr-16 -mt-16"></div>
+          <div className="absolute bottom-0 left-0 w-32 h-32 bg-blue-500/10 blur-3xl rounded-full -ml-16 -mb-16"></div>
+
+          <h3 className="text-3xl font-bold text-[#0A2540] dark:text-white mb-6">
             Still have questions?
           </h3>
-          <p className="text-gray-600 dark:text-gray-400 mb-6">
-            Can't find the answer you're looking for? Please chat to our
-            friendly team.
+          <p className="text-gray-500 dark:text-gray-400 mb-10 text-lg max-w-lg mx-auto leading-relaxed">
+            Can't find the answer you're looking for? Please chat with our
+            friendly team. We're here 24/7.
           </p>
-          <button className="bg-[#C9A24D] text-white px-8 py-3 rounded-lg font-semibold hover:bg-[#b58f3e] transition shadow-lg">
+
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="bg-[#C9A24D] text-white px-10 py-4 rounded-full font-bold text-lg hover:bg-[#b58f3e] transition-all shadow-[0_10px_30px_rgba(201,162,77,0.3)]"
+          >
             Get In Touch
-          </button>
-        </div>
+          </motion.button>
+        </motion.div>
       </div>
     </div>
   );
